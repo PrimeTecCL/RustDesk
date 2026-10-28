@@ -20,10 +20,19 @@
 ;      /DRD_VERSION="1.5.0" ^
 ;      /DRD_HOST="rustdesk.primetec.cl" ^
 ;      /DRD_KEY="4KDYvmOasvAG4dG1k+KYwBsuprgwP1DownC21Jw18Gs=" ^
-;      /DRD_API="https://rustdesk.primetec.cl"
+;      /DRD_API="https://rustdesk.primetec.cl" ^
+;      /DRD_PASSWORD="UnaClaveFija123!"
 ;
 ;  Si compilas directo desde el IDE de Inno Setup (Ctrl+F9) se usan los
 ;  valores por defecto definidos mas abajo (los de PrimeTec).
+;
+;  ACCESO DESATENDIDO (sin que nadie tenga que aceptar la conexion ni haya
+;  alguien frente al equipo): el instalador configura una contrasena
+;  permanente y pone el modo de aprobacion en "solo contrasena". Si no pasas
+;  /DRD_PASSWORD, se genera una contrasena aleatoria distinta por equipo y
+;  queda guardada en texto plano en "{app}\PrimeTec-RustDesk-Password.txt"
+;  (debes ir a copiarla de ahi despues de instalar, ya que al ser un
+;  despliegue silencioso no se muestra ningun aviso en pantalla).
 ; =============================================================================
 
 #ifndef RD_APP_NAME
@@ -43,6 +52,9 @@
 #endif
 #ifndef RD_API
   #define RD_API "https://rustdesk.primetec.cl"
+#endif
+#ifndef RD_PASSWORD
+  #define RD_PASSWORD ""
 #endif
 
 #define RD_MSI_NAME "rustdesk-" + RD_VERSION + "-x86_64.msi"
@@ -204,6 +216,9 @@ begin
   ForceDirectories(ConfigDir);
   TomlPath := ConfigDir + '\RustDesk2.toml';
 
+  // approve-mode = 'password': evita el popup "Aceptar conexion"; la sesion
+  // entra solo con la contrasena permanente, sin nadie frente al equipo.
+  // Necesario para acceso desatendido a servidores.
   Content :=
     'rendezvous_server = ''' + '{#RD_HOST}' + '''' + #13#10 +
     'nat_type = 1' + #13#10 +
@@ -212,9 +227,48 @@ begin
     'key = ''' + '{#RD_KEY}' + '''' + #13#10 +
     'relay-server = ''' + '{#RD_HOST}' + '''' + #13#10 +
     'api-server = ''' + '{#RD_API}' + '''' + #13#10 +
-    'custom-rendezvous-server = ''' + '{#RD_HOST}' + '''' + #13#10;
+    'custom-rendezvous-server = ''' + '{#RD_HOST}' + '''' + #13#10 +
+    'approve-mode = ''password''' + #13#10;
 
   SaveStringToFile(TomlPath, Content, False);
+end;
+
+// Genera una contrasena aleatoria (mayusculas, minusculas y digitos) cuando
+// no se especifico una fija vía /DRD_PASSWORD, para no dejar la misma clave
+// en todos los equipos desatendidos sin que el operador lo note.
+function GenerateRandomPassword(PwdLength: Integer): String;
+var
+  Chars: String;
+  i: Integer;
+begin
+  Chars := 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  Result := '';
+  for i := 1 to PwdLength do
+    Result := Result + Chars[Random(Length(Chars)) + 1];
+end;
+
+// Escribe la contrasena permanente de acceso desatendido. RustDesk acepta
+// texto plano en el campo "password" de RustDesk.toml y la cifra el solo
+// al primer arranque del servicio (mismo directorio que RustDesk2.toml).
+// Tambien se guarda una copia en un .txt junto al ejecutable para que el
+// operador pueda recuperarla, ya que la instalacion es 100% silenciosa.
+procedure WritePermanentPassword;
+var
+  ConfigDir, TomlPath, Password: String;
+begin
+  Password := '{#RD_PASSWORD}';
+  if Password = '' then
+    Password := GenerateRandomPassword(14);
+
+  ConfigDir := ExpandConstant('{win}\ServiceProfiles\LocalService\AppData\Roaming\RustDesk\config');
+  ForceDirectories(ConfigDir);
+  TomlPath := ConfigDir + '\RustDesk.toml';
+  SaveStringToFile(TomlPath, 'password = ''' + Password + '''' + #13#10, False);
+
+  SaveStringToFile(ExpandConstant('{app}\PrimeTec-RustDesk-Password.txt'),
+    'Contrasena permanente de acceso desatendido para este equipo: ' + Password + #13#10 +
+    'Busca el ID de este equipo en el panel web (' + '{#RD_API}' + ') por nombre de host.' + #13#10,
+    False);
 end;
 
 procedure RestartRustDeskService;
@@ -231,6 +285,7 @@ begin
   if CurStep = ssPostInstall then
   begin
     WriteServerConfig;
+    WritePermanentPassword;
     RestartRustDeskService;
   end;
 end;

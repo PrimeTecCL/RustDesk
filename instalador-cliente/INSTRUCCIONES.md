@@ -80,7 +80,8 @@ una VM o equipo de prueba) con el ícono real de la empresa.
      /DRD_VERSION="1.5.0" ^
      /DRD_HOST="rustdesk.primetec.cl" ^
      /DRD_KEY="4KDYvmOasvAG4dG1k+KYwBsuprgwP1DownC21Jw18Gs=" ^
-     /DRD_API="https://rustdesk.primetec.cl"
+     /DRD_API="https://rustdesk.primetec.cl" ^
+     /DRD_PASSWORD="UnaClaveFija123!"
    ```
 
 5. Prueba el instalador generado en una VM o equipo de prueba (con
@@ -93,6 +94,32 @@ una VM o equipo de prueba) con el ícono real de la empresa.
      como script en vez de instalador).
    - El acceso directo del Menú Inicio/Escritorio debe mostrar el ícono y
      nombre de la empresa.
+   - Debe quedar accesible **sin que nadie acepte la conexión** (ver
+     siguiente sección).
+
+## Acceso desatendido (servidores sin nadie frente a la pantalla)
+
+El instalador configura automáticamente una **contraseña permanente** y pone
+el modo de aprobación de RustDesk en `approve-mode = 'password'`, para que la
+conexión entre con solo la contraseña, sin el popup de "Aceptar conexión" y
+sin que haya una sesión de usuario abierta.
+
+- Si compilas pasando `/DRD_PASSWORD="algo"`, esa es la contraseña fija que
+  queda en todos los equipos instalados con ese build (útil si quieres que
+  todo el equipo de soporte use la misma clave para todos los servidores).
+- Si **no** pasas `/DRD_PASSWORD` (o compilas desde el IDE con Ctrl+F9), cada
+  equipo genera su propia contraseña aleatoria distinta al instalar, y la
+  deja guardada en texto plano en:
+  ```
+  C:\Program Files\PrimeTec RustDesk\PrimeTec-RustDesk-Password.txt
+  ```
+  Como la instalación es 100% silenciosa (pensada para correr en servidores
+  sin nadie presente), no se muestra ningún aviso en pantalla: hay que ir a
+  leer ese archivo después de instalar para obtener la contraseña de ese
+  equipo en particular.
+- El ID de cada equipo se puede ubicar en el panel web de `rustdesk-api`
+  (`https://rustdesk.primetec.cl`) buscando por nombre de host, ya que no hay
+  forma de verlo en pantalla en un servidor sin sesión interactiva.
 
 ## Actualizar a una nueva versión de RustDesk
 
