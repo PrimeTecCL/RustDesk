@@ -43,6 +43,19 @@ instalador-cliente/
     └── rustdesk-1.5.0-x86_64.msi   <- (lo descargas tú, no está versionado)
 ```
 
+## Estado actual
+
+Ya se compiló y validó una vez (en Linux, vía Docker + Wine con la imagen
+`amake/innosetup`, usando el MSI oficial 1.5.0 y un ícono placeholder) para
+confirmar que el `.iss` compila sin errores y genera un `.exe` válido
+(`Instalador-PrimeTec-RustDesk.exe`, PE32 GUI de ~27 MB). Esa verificación
+solo confirma que el script compila y empaqueta bien; **no reemplaza probar
+el instalador en un Windows real**, porque el comportamiento en tiempo de
+ejecución (instalación silenciosa del MSI, escritura de `RustDesk2.toml`,
+reinicio del servicio `RustDesk`) solo puede validarse en Windows de verdad.
+Antes de distribuirlo a usuarios finales, sigue el paso 5 de abajo (probar en
+una VM o equipo de prueba) con el ícono real de la empresa.
+
 ## Pasos para compilar el instalador en Windows
 
 1. Clona/descarga este repo en tu PC Windows y ubica la carpeta
@@ -62,8 +75,8 @@ instalador-cliente/
 
    ```bat
    "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" PrimeTecRustDesk.iss ^
-     /DAPP_NAME="PrimeTec RustDesk" ^
-     /DCOMPANY_NAME="PrimeTec" ^
+     /DRD_APP_NAME="PrimeTec RustDesk" ^
+     /DRD_COMPANY_NAME="PrimeTec" ^
      /DRD_VERSION="1.5.0" ^
      /DRD_HOST="rustdesk.primetec.cl" ^
      /DRD_KEY="4KDYvmOasvAG4dG1k+KYwBsuprgwP1DownC21Jw18Gs=" ^
