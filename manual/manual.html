@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8" />
+<title>RustDesk - Instalacion y configuracion rapida</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; color: #1f2937; font-size: 12pt; line-height: 1.55; margin: 0; }
+  .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 8.5pt; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 3px; }
+  .footer .brand { color: #0e7490; font-weight: 600; }
+
+  header { text-align:center; margin-bottom: 22px; }
+  header h1 { font-size: 20pt; color:#0f172a; margin:0 0 4px 0; }
+  header p { color:#0e7490; margin:0; font-size: 11pt; }
+
+  h2.section-title { font-size: 14pt; color: #0e7490; border-bottom: 2px solid #0e7490; padding-bottom: 5px; margin: 26px 0 12px 0; }
+  h2.section-title .num { display:inline-block; background:#0e7490; color:#fff; width: 26px; height:26px; border-radius:6px; text-align:center; line-height:26px; font-size: 12pt; margin-right: 8px; vertical-align: middle; }
+
+  ol.steps { counter-reset: step; list-style:none; padding-left:0; margin: 10px 0; }
+  ol.steps > li { counter-increment: step; margin: 10px 0; padding: 8px 12px 8px 40px; position: relative; background: #f8fafc; border-left: 3px solid #0e7490; border-radius: 4px; }
+  ol.steps > li::before { content: counter(step); position:absolute; left:9px; top:7px; background:#0e7490; color:#fff; width:20px; height:20px; border-radius:50%; font-size: 10pt; text-align:center; line-height:20px; font-weight:700; }
+
+  code, .mono { font-family: Consolas, 'Courier New', monospace; background:#0f172a; color:#e0f2fe; padding: 2px 7px; border-radius: 4px; font-size: 10.5pt; }
+
+  table { width:100%; border-collapse: collapse; margin: 10px 0; font-size: 11pt; }
+  th, td { border:1px solid #e2e8f0; padding:8px 10px; text-align:left; }
+  th { background:#0e7490; color:#fff; }
+  tr:nth-child(even) td:not(.mono) { background:#f8fafc; }
+  .kv { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:14px 16px; margin:14px 0;}
+  .kv table { margin:0; }
+  .kv th { background:#334155; }
+
+  .callout { border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 10.5pt; }
+  .callout.warn { background:#fff8e6; border-left:4px solid #f59e0b; }
+  .callout.info { background:#eff8ff; border-left:4px solid #3b82f6; }
+  .callout .label { font-weight:700; display:block; margin-bottom:4px; }
+  .callout.warn .label { color:#b45309; }
+  .callout.info .label { color:#1d4ed8; }
+</style>
+</head>
+<body>
+
+<div class="footer"><span class="brand">PrimeTec</span> &middot; RustDesk - Instalacion y configuracion rapida &middot; Uso interno</div>
+
+<header>
+  <h1>RustDesk &mdash; Instalacion y configuracion rapida</h1>
+  <p>Servidor interno: rustdesk.primetec.cl</p>
+</header>
+
+<section>
+  <h2 class="section-title"><span class="num">1</span>Descargar e instalar</h2>
+  <ol class="steps">
+    <li>Entra a <span class="mono">https://rustdesk.com/download</span> y descarga la version <b>Windows 64-bit</b>.</li>
+    <li>Ejecuta el instalador descargado y acepta el aviso de Windows (UAC) si aparece.</li>
+  </ol>
+</section>
+
+<section>
+  <h2 class="section-title"><span class="num">2</span>Configurar el servidor</h2>
+  <p>Abre RustDesk &rarr; icono de menu (arriba a la derecha) &rarr; <b>Configuracion</b> &rarr; pestana <b>Red</b> &rarr; <b>ID/Relay Server</b>. Ingresa estos datos y presiona <b>Aplicar</b>:</p>
+
+  <div class="kv">
+    <table>
+      <tr><th>Campo en RustDesk</th><th>Valor a ingresar</th></tr>
+      <tr><td>ID Server</td><td class="mono">rustdesk.primetec.cl:21116</td></tr>
+      <tr><td>Relay Server</td><td class="mono">rustdesk.primetec.cl:21117</td></tr>
+      <tr><td>API Server (opcional)</td><td class="mono">https://rustdesk.primetec.cl</td></tr>
+      <tr><td>Key</td><td class="mono">4KDYvmOasvAG4dG1k+KYwBsuprgwP1DownC21Jw18Gs=</td></tr>
+    </table>
+  </div>
+
+  <div class="callout info">
+    <span class="label">Sobre los puertos</span>
+    Los puertos 21116 (ID) y 21117 (Relay) son los que tiene configurados nuestro servidor.
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Importante</span>
+    Copia la <b>Key</b> exactamente como aparece, sin espacios al inicio ni al final.
+    Si la clave es incorrecta, el equipo no podra registrarse en el servidor.
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title"><span class="num">3</span>Listo</h2>
+  <p>Una vez aplicados los datos, RustDesk asignara un nuevo <b>ID</b> para tu equipo.
+    Ese es el identificador que debes compartir con soporte TI de ahora en adelante.</p>
+</section>
+
+</body>
+</html>

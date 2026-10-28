@@ -1,0 +1,75 @@
+# RustDesk self-hosted server (hbbs + hbbr) + rustdesk-api web panel
+#
+# Dominio: rustdesk.primetec.cl -> debe apuntar (DNS A) a la IP publica de
+# srv-ubuntu01 (200.6.97.153). El panel web (puerto 21114) se expone a
+# internet via CloudPanel (reverse proxy + Let's Encrypt), no directo.
+#
+# Puertos usados (deben estar abiertos en el firewall/NAT hacia este host):
+#   21115/tcp - NAT type test
+#   21116/tcp+udp - ID registration & heartbeat (hbbs)
+#   21117/tcp - relay (hbbr)
+#   21118/tcp - websocket (clientes web, opcional)
+#   21119/tcp - websocket relay (opcional)
+#   21114/tcp - panel web rustdesk-api (va detras de nginx/TLS, no exponer directo)
+#
+# hbbs y rustdesk-api comparten el namespace de red de hbbr (network_mode:
+# service:hbbr) en lugar de usar network_mode: host. Esto hace que los tres
+# vean el mismo 127.0.0.1 entre si (necesario para la funcion "Server Command"
+# del panel web de rustdesk-api, que dialoga por TCP a 127.0.0.1:21115/21117),
+# sin exponer el host completo como lo haria network_mode: host.
+
+services:
+  hbbr:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-hbbr
+    command: hbbr
+    ports:
+      - "21114:21114"
+      - "21115:21115"
+      - "21116:21116"
+      - "21116:21116/udp"
+      - "21117:21117"
+      - "21118:21118"
+      - "21119:21119"
+    volumes:
+      - rustdesk-data:/root
+    restart: unless-stopped
+
+  hbbs:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-hbbs
+    command: hbbs -r rustdesk.primetec.cl:21117
+    network_mode: "service:hbbr"
+    volumes:
+      - rustdesk-data:/root
+    depends_on:
+      - hbbr
+    restart: unless-stopped
+
+  rustdesk-api:
+    image: lejianwen/rustdesk-api:latest
+    container_name: rustdesk-api
+    network_mode: "service:hbbr"
+    environment:
+      - TZ=America/Santiago
+      - RUSTDESK_API_LANG=en
+      - RUSTDESK_API_ADMIN_HELLO=Welcome to RustDesk API, <b>admin</b>
+      - RUSTDESK_API_RUSTDESK_ID_SERVER=rustdesk.primetec.cl:21116
+      - RUSTDESK_API_RUSTDESK_RELAY_SERVER=rustdesk.primetec.cl:21117
+      - RUSTDESK_API_RUSTDESK_API_SERVER=https://rustdesk.primetec.cl
+    volumes:
+      - rustdesk-api-data:/app/data
+      - rustdesk-data:/app/conf/data
+      - ./api/web2:/app/resources/web2
+    depends_on:
+      - hbbs
+      - hbbr
+    restart: unless-stopped
+
+volumes:
+  rustdesk-data:
+  rustdesk-api-data:
+
+networks:
+  default:
+    name: rustdesk_default

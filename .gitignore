@@ -1,0 +1,4 @@
+instalador-cliente/redist/*.msi
+instalador-cliente/redist/*.exe
+instalador-cliente/assets/*.ico
+instalador-cliente/output/
