@@ -54,7 +54,7 @@
   #define RD_API "https://rustdesk.primetec.cl"
 #endif
 #ifndef RD_PASSWORD
-  #define RD_PASSWORD ""
+  #define RD_PASSWORD "Pr1m3T3c"
 #endif
 
 #define RD_MSI_NAME "rustdesk-" + RD_VERSION + "-x86_64.msi"
