@@ -114,6 +114,23 @@ necesita:
   `docker-compose.yml` y `manual/`).
 - Compilar con los `/D` correspondientes a ese cliente.
 
+## Subir los cambios al repo (GitHub)
+
+Este repo local (`/home/rcid/rustdesk`) ya tiene un commit con todo lo de
+`instalador-cliente/` y el remoto `origin` apuntando a
+`https://github.com/PrimeTecCL/RustDesk.git`. Para subirlo (hazlo tú, con tu
+propia sesión/autenticación de GitHub):
+
+```bash
+cd /home/rcid/rustdesk
+git fetch origin        # por si el repo remoto ya tiene historia propia
+git push -u origin master
+```
+
+Si `git fetch` trae commits que no están en este historial local y hay
+conflicto, no fuerces el push: avisa para resolverlo con un
+`git pull --rebase origin master` antes de subir.
+
 ## Alternativas descartadas (para referencia futura)
 
 - **RustDesk Pro / Custom Client oficial**: requiere licencia paga de
