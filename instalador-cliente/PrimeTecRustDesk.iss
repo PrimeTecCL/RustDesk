@@ -271,21 +271,71 @@ begin
     False);
 end;
 
+// Consulta "sc query <ServiceName>" y devuelve su salida completa, para poder
+// revisar el estado real del servicio (RUNNING/STOPPED) en vez de confiar en
+// un Sleep fijo, que en equipos lentos/recien instalados puede no alcanzar.
+function QueryServiceOutput(ServiceName: String): String;
+var
+  TempFile: String;
+  Output: AnsiString;
+  ResultCode: Integer;
+begin
+  Result := '';
+  TempFile := ExpandConstant('{tmp}\rd_sc_query.txt');
+  Exec(ExpandConstant('{cmd}'), '/C sc query "' + ServiceName + '" > "' + TempFile + '" 2>&1',
+    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if LoadStringFromFile(TempFile, Output) then
+    Result := String(Output);
+end;
+
+// Espera hasta MaxTries * 500ms a que el servicio llegue al estado pedido
+// (por ejemplo 'RUNNING' o 'STOPPED'). Si se agota el tiempo, simplemente
+// sigue adelante (no bloquea la instalacion indefinidamente).
+procedure WaitForServiceState(ServiceName, StateSubstr: String; MaxTries: Integer);
+var
+  i: Integer;
+begin
+  for i := 1 to MaxTries do
+  begin
+    if Pos(StateSubstr, QueryServiceOutput(ServiceName)) > 0 then
+      Exit;
+    Sleep(500);
+  end;
+end;
+
+// Reinicia el servicio para que relea RustDesk2.toml/RustDesk.toml. Espera a
+// que termine de arrancar (tras el MSI) antes de intentar detenerlo, porque
+// si se corta mientras todavia esta iniciando, "sc stop" puede fallar en
+// silencio y el servicio sigue corriendo con la configuracion anterior (o la
+// de fabrica), sin aplicar el servidor propio. Esto causaba que, en la
+// primera instalacion en un equipo nuevo, el servidor/IP no quedara
+// configurado hasta desinstalar y volver a instalar.
 procedure RestartRustDeskService;
 var
   ResultCode: Integer;
 begin
+  WaitForServiceState('RustDesk', 'RUNNING', 30);
   Exec(ExpandConstant('{sys}\sc.exe'), 'stop RustDesk', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Sleep(2000);
+  WaitForServiceState('RustDesk', 'STOPPED', 20);
   Exec(ExpandConstant('{sys}\sc.exe'), 'start RustDesk', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  WaitForServiceState('RustDesk', 'RUNNING', 20);
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-  if CurStep = ssPostInstall then
+  // Se escribe la configuracion ANTES de que el MSI instale y arranque el
+  // servicio de RustDesk por primera vez (ssInstall ocurre antes que el
+  // [Run] del MSI), para que en equipos nuevos arranque ya configurado
+  // contra el servidor propio desde el primer inicio, sin depender de que
+  // el reinicio posterior del servicio alcance a aplicar el cambio.
+  if CurStep = ssInstall then
   begin
     WriteServerConfig;
     WritePermanentPassword;
-    RestartRustDeskService;
   end;
+  // Se reinicia el servicio al final por las dudas (instalaciones encima de
+  // una instancia ya instalada/corriendo, donde el servicio no arranca de
+  // cero y por lo tanto no recoge solo el archivo nuevo).
+  if CurStep = ssPostInstall then
+    RestartRustDeskService;
 end;
