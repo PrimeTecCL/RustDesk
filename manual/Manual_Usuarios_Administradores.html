@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8" />
+<title>RustDesk - Usuarios administradores e instalacion en servidores</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; color: #1f2937; font-size: 12pt; line-height: 1.55; margin: 0; }
+  .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 8.5pt; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 3px; }
+  .footer .brand { color: #0e7490; font-weight: 600; }
+
+  header { text-align:center; margin-bottom: 22px; }
+  header h1 { font-size: 20pt; color:#0f172a; margin:0 0 4px 0; }
+  header p { color:#0e7490; margin:0; font-size: 11pt; }
+
+  .page2 { page-break-before: always; }
+
+  h2.section-title { font-size: 14pt; color: #0e7490; border-bottom: 2px solid #0e7490; padding-bottom: 5px; margin: 26px 0 12px 0; }
+  h2.section-title:first-of-type { margin-top: 0; }
+  h2.section-title .num { display:inline-block; background:#0e7490; color:#fff; width: 26px; height:26px; border-radius:6px; text-align:center; line-height:26px; font-size: 12pt; margin-right: 8px; vertical-align: middle; }
+
+  ol.steps { counter-reset: step; list-style:none; padding-left:0; margin: 10px 0; }
+  ol.steps > li { counter-increment: step; margin: 10px 0; padding: 8px 12px 8px 40px; position: relative; background: #f8fafc; border-left: 3px solid #0e7490; border-radius: 4px; }
+  ol.steps > li::before { content: counter(step); position:absolute; left:9px; top:7px; background:#0e7490; color:#fff; width:20px; height:20px; border-radius:50%; font-size: 10pt; text-align:center; line-height:20px; font-weight:700; }
+
+  code, .mono { font-family: Consolas, 'Courier New', monospace; background:#0f172a; color:#e0f2fe; padding: 2px 7px; border-radius: 4px; font-size: 10.5pt; }
+
+  table { width:100%; border-collapse: collapse; margin: 10px 0; font-size: 11pt; }
+  th, td { border:1px solid #e2e8f0; padding:8px 10px; text-align:left; }
+  th { background:#0e7490; color:#fff; }
+  tr:nth-child(even) td:not(.mono) { background:#f8fafc; }
+  .kv { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:14px 16px; margin:14px 0;}
+  .kv table { margin:0; }
+  .kv th { background:#334155; }
+
+  .callout { border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 10.5pt; }
+  .callout.warn { background:#fff8e6; border-left:4px solid #f59e0b; }
+  .callout.info { background:#eff8ff; border-left:4px solid #3b82f6; }
+  .callout .label { font-weight:700; display:block; margin-bottom:4px; }
+  .callout.warn .label { color:#b45309; }
+  .callout.info .label { color:#1d4ed8; }
+
+  figure { margin: 12px 0; }
+  figure img { width:100%; border:1px solid #cbd5e1; border-radius:6px; display:block; }
+  figcaption { font-size: 9.5pt; color:#64748b; text-align:center; margin-top:4px; }
+
+  .btn-tag { display:inline-block; font-weight:700; font-size:10pt; padding:1px 8px; border-radius:4px; color:#fff; }
+  .btn-tag.green { background:#22c55e; }
+  .btn-tag.blue { background:#3b82f6; }
+  .btn-tag.gray { background:#64748b; }
+  .btn-tag.red { background:#ef4444; }
+</style>
+</head>
+<body>
+
+<div class="footer"><span class="brand">PrimeTec</span> &middot; RustDesk - Usuarios administradores e instalacion en servidores &middot; Uso interno</div>
+
+<header>
+  <h1>RustDesk &mdash; Usuarios administradores e instalacion en servidores</h1>
+  <p>Panel de administracion: er.primetec.cl</p>
+</header>
+
+<h2 class="section-title"><span class="num">1</span>Acceso al panel de administracion</h2>
+<p>Ingresa a <span class="mono">https://er.primetec.cl</span> con cualquiera de las siguientes cuentas. Las tres cuentas tienen permisos de <b>administrador</b> y comparten la misma contrasena inicial.</p>
+
+<div class="kv">
+  <table>
+    <tr><th>Usuario</th><th>Contrasena inicial</th></tr>
+    <tr><td class="mono">parancibia@primetec.cl</td><td class="mono">De5-e@KM7*zWv6</td></tr>
+    <tr><td class="mono">polivares@primetec.cl</td><td class="mono">De5-e@KM7*zWv6</td></tr>
+    <tr><td class="mono">lmedina@primetec.cl</td><td class="mono">De5-e@KM7*zWv6</td></tr>
+  </table>
+</div>
+
+<div class="callout warn">
+  <span class="label">Importante</span>
+  Por seguridad, cada usuario debe cambiar esta contrasena por una propia apenas inicie sesion por primera vez (menu de usuario &gt; Cambiar mi contrasena).
+</div>
+
+<div class="page2">
+<h2 class="section-title"><span class="num">2</span>Descargar e instalar el cliente en los equipos servidores</h2>
+<p>Para poder administrar remotamente los equipos servidores desde el panel, cada servidor debe tener instalado el cliente RustDesk, ya configurado para apuntar a nuestro servidor interno.</p>
+
+<ol class="steps">
+  <li>Entra a la pagina de descarga oficial del instalador PrimeTec:<br><span class="mono">https://github.com/PrimeTecCL/RustDesk/releases/tag/instalador-cliente-v1.5.0</span></li>
+  <li>Descarga el archivo <span class="mono">Instalador-PrimeTec-RustDesk.exe</span> (instalador customizado de PrimeTec, con el servidor ya configurado).</li>
+  <li>Copia el archivo al equipo servidor que quieres administrar.</li>
+  <li>Ejecuta el instalador <b>como Administrador</b> (click derecho &gt; "Ejecutar como administrador") y acepta el aviso de Windows (UAC) si aparece.</li>
+  <li>Espera a que termine la instalacion. No requiere ingresar ningun dato: el servidor, la key y el API ya vienen incluidos en el instalador.</li>
+  <li>Al finalizar, abre RustDesk desde el acceso directo creado (icono "PrimeTec RustDesk") y verifica que se haya asignado un <b>ID</b> de equipo.</li>
+</ol>
+
+<div class="callout info">
+  <span class="label">Verificacion</span>
+  El equipo servidor instalado debe aparecer disponible en el panel (<span class="mono">er.primetec.cl</span>), bajo la seccion de equipos/peers, y debe poder conectarse desde cualquiera de las 3 cuentas administradoras.
+</div>
+
+<div class="callout warn">
+  <span class="label">Importante</span>
+  Este instalador requiere permisos de administrador porque instala un servicio de Windows. No lo ejecutes en equipos que no sean servidores destinados a administracion remota de TI.
+</div>
+
+<h2 class="section-title"><span class="num">3</span>Ver y administrar los equipos (PeerManage)</h2>
+<p>En el menu lateral, bajo <b>System &gt; PeerManage</b>, aparece la lista completa de todos los equipos servidores que ya tienen el cliente instalado y registrado contra nuestro servidor.</p>
+
+<figure>
+  <img src="img_tmp/01_peermanage.png" alt="Pantalla PeerManage">
+  <figcaption>System &gt; PeerManage: listado de equipos registrados</figcaption>
+</figure>
+
+<p>Por cada equipo de la lista, en la columna <b>Actions</b> tienes estos botones:</p>
+<div class="kv">
+  <table>
+    <tr><th>Boton</th><th>Para que sirve</th></tr>
+    <tr><td><span class="btn-tag green">Link</span></td><td>Conecta usando la app de escritorio de RustDesk instalada en tu PC (si la tienes instalada).</td></tr>
+    <tr><td><span class="btn-tag blue">Web Client</span></td><td><b>Conectarse remotamente desde el navegador, sin instalar nada</b>. Este es el boton recomendado para el uso diario.</td></tr>
+    <tr><td><span class="btn-tag blue">AddToAddressBook</span></td><td>Agrega el equipo a tu libreta de direcciones personal, para tenerlo guardado con un alias.</td></tr>
+    <tr><td><span class="btn-tag gray">Edit</span></td><td>Permite <b>editar</b> el peer: cambiarle el alias/nombre visible, asignarlo a un grupo, agregar tags, etc.</td></tr>
+    <tr><td><span class="btn-tag red">Delete</span></td><td>Elimina el registro del equipo de la lista (no desinstala RustDesk del servidor).</td></tr>
+  </table>
+</div>
+
+<div class="page2">
+<h2 class="section-title"><span class="num">4</span>Grupos (GroupManage)</h2>
+<p>En <b>System &gt; GroupManage</b> se administran los grupos. Por defecto ya existen dos:</p>
+
+<figure>
+  <img src="img_tmp/02_groupmanage.png" alt="Pantalla GroupManage">
+  <figcaption>System &gt; GroupManage: grupos existentes</figcaption>
+</figure>
+
+<div class="kv">
+  <table>
+    <tr><th>Grupo</th><th>Tipo</th><th>Para que sirve</th></tr>
+    <tr><td>Default Group</td><td>CommonGroup</td><td>Grupo por defecto donde quedan los usuarios/equipos al crearse, sin compartir automaticamente entre ellos.</td></tr>
+    <tr><td>Shared Group</td><td>SharedGroup</td><td>Los equipos de este grupo quedan visibles para todos los usuarios que pertenezcan a el, util para compartir acceso entre varias personas sin configurar cada equipo por separado.</td></tr>
+  </table>
+</div>
+
+<p>Con el boton <span class="btn-tag blue">Add</span> puedes crear un grupo nuevo, y con <b>Edit</b> en un peer (ver seccion anterior) puedes asignarlo a un grupo distinto.</p>
+
+<div class="callout info">
+  <span class="label">Nota</span>
+  Como las 3 cuentas administradoras tienen permisos de <b>administrador</b>, ya ven todos los equipos en PeerManage sin importar el grupo. Los grupos son mas relevantes si en el futuro se crean usuarios sin permisos de administrador, para limitarles que equipos pueden ver.
+</div>
+
+<h2 class="section-title"><span class="num">5</span>Conectarse a un equipo remoto</h2>
+<ol class="steps">
+  <li>Ve a <b>System &gt; PeerManage</b> y ubica el equipo al que te quieres conectar.</li>
+  <li>Haz click en el boton <span class="btn-tag blue">Web Client</span> de ese equipo (es el que permite conectarse directo desde el navegador, sin instalar la app de RustDesk en tu PC).</li>
+  <li>Si el navegador muestra un aviso para abrir la aplicacion asociada, puedes <b>Cancelar</b> ese aviso: no hace falta la app instalada para usar el Web Client.</li>
+  <li>Cuando te pida la <b>contrasena de conexion</b>, ingresa: <span class="mono">Pr1m3T3c</span></li>
+  <li>Listo, ya estas viendo y controlando el escritorio remoto del servidor.</li>
+</ol>
+
+<figure>
+  <img src="img_tmp/03_connect_prompt.png" alt="Aviso del navegador al conectar">
+  <figcaption>Aviso del navegador al hacer click en Link/Web Client (puedes Cancelar este aviso si usas Web Client)</figcaption>
+</figure>
+
+<figure>
+  <img src="img_tmp/04_connected_session.png" alt="Sesion remota conectada">
+  <figcaption>Asi se ve una sesion conectada: barra flotante arriba para fijar la ventana, ajustar calidad, teclado, chat, grabar y cerrar (X) la sesion</figcaption>
+</figure>
+
+<div class="callout warn">
+  <span class="label">Importante</span>
+  La contrasena <span class="mono">Pr1m3T3c</span> es la <b>contrasena de conexion a los equipos remotos</b>, distinta de la contrasena de tu cuenta para entrar al panel (<span class="mono">er.primetec.cl</span>). No las confundas.
+</div>
+
+<div class="page2">
+<h2 class="section-title"><span class="num">6</span>Solucion de problemas: "Falta el icono de acceso directo"</h2>
+<p>Al hacer doble clic en el acceso directo <b>"PrimeTec RustDesk"</b> (escritorio o menu inicio), Windows puede mostrar el error <i>"Falta el icono de acceso directo"</i> pidiendo ubicar <span class="mono">rustdesk.exe</span> manualmente.</p>
+
+<div class="callout warn">
+  <span class="label">Por que pasa</span>
+  El instalador customizado de PrimeTec crea el acceso directo apuntando a la
+  carpeta <span class="mono">C:\Program Files\PrimeTec RustDesk\rustdesk.exe</span>,
+  pero en instaladores generados antes de esta correccion, el MSI oficial de
+  RustDesk se instalaba en su carpeta por defecto,
+  <span class="mono">C:\Program Files\RustDesk\rustdesk.exe</span> (carpeta
+  distinta). El acceso directo queda apuntando a un archivo que nunca existio
+  en esa ruta, y Windows no lo encuentra.
+</div>
+
+<p><b>Solucion rapida</b> (sin reinstalar, arregla el acceso directo en el equipo afectado):</p>
+<ol class="steps">
+  <li>Haz clic derecho sobre el acceso directo roto ("PrimeTec RustDesk") y elige <b>Propiedades</b>.</li>
+  <li>En el campo <b>Destino</b>, reemplaza la ruta por: <span class="mono">C:\Program Files\RustDesk\rustdesk.exe</span></li>
+  <li>Presiona <b>Aplicar</b> y luego <b>Aceptar</b>.</li>
+  <li>Prueba nuevamente el acceso directo: ya deberia abrir RustDesk con normalidad.</li>
+</ol>
+
+<div class="callout info">
+  <span class="label">Si no encuentras rustdesk.exe en esa ruta</span>
+  Abre el explorador de archivos y busca <span class="mono">rustdesk.exe</span>
+  dentro de <span class="mono">C:\Program Files\</span> (puede estar en
+  <span class="mono">RustDesk\</span> o en <span class="mono">PrimeTec RustDesk\</span>
+  segun la version del instalador usada). Usa esa ruta real como Destino del
+  acceso directo.
+</div>
+
+<p><b>Solucion definitiva</b> (recomendada para equipos nuevos o reinstalaciones): los instaladores generados a partir de la version corregida de
+<span class="mono">PrimeTecRustDesk.iss</span> ya fuerzan que RustDesk se instale en la misma carpeta que usa el acceso directo, por lo que este problema no vuelve a ocurrir. Si vas a instalar en un equipo nuevo, descarga la version mas reciente del instalador desde la pagina de releases (ver seccion 2) en vez de reutilizar un instalador antiguo ya generado.</p>
+</div>
+
+<h2 class="section-title"><span class="num">7</span>Listo</h2>
+<p>Con la cuenta, el cliente instalado y lo basico de PeerManage/Grupos, ya puedes administrar de forma remota los equipos servidores desde el panel <span class="mono">er.primetec.cl</span>.</p>
+</div>
+
+</body>
+</html>

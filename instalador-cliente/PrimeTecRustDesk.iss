@@ -96,8 +96,14 @@ Name: "{group}\{#RD_APP_NAME}"; Filename: "{app}\rustdesk.exe"; IconFilename: "{
 Name: "{autodesktop}\{#RD_APP_NAME}"; Filename: "{app}\rustdesk.exe"; IconFilename: "{app}\company.ico"
 
 [Run]
-; 1) Instala el MSI oficial de RustDesk en modo silencioso
-Filename: "msiexec.exe"; Parameters: "/i ""{tmp}\{#RD_MSI_NAME}"" /qn /norestart"; StatusMsg: "Instalando RustDesk..."; Flags: waituntilterminated
+; 1) Instala el MSI oficial de RustDesk en modo silencioso.
+;    IMPORTANTE: se fuerza INSTALLFOLDER="{app}" para que rustdesk.exe quede
+;    en la misma carpeta que usan los accesos directos de abajo (si no, el
+;    MSI se instala por defecto en "C:\Program Files\RustDesk" y los accesos
+;    directos quedan rotos: "Falta el icono de acceso directo"). Tambien se
+;    desactivan los accesos directos propios del MSI para no duplicar los
+;    nuestros (con marca/icono de la empresa).
+Filename: "msiexec.exe"; Parameters: "/i ""{tmp}\{#RD_MSI_NAME}"" /qn /norestart INSTALLFOLDER=""{app}"" CREATESTARTMENUSHORTCUTS=""N"" CREATEDESKTOPSHORTCUTS=""N"""; StatusMsg: "Instalando RustDesk..."; Flags: waituntilterminated
 
 [UninstallRun]
 ; Al desinstalar "PrimeTec RustDesk" (desde Configuracion/Panel de Control),

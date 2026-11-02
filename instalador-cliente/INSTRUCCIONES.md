@@ -43,6 +43,27 @@ instalador-cliente/
     └── rustdesk-1.5.0-x86_64.msi   <- (lo descargas tú, no está versionado)
 ```
 
+## Bug conocido y corregido: "Falta el icono de acceso directo"
+
+Versiones del `.iss` anteriores a esta corrección generaban accesos directos
+rotos: el acceso directo apunta a `{app}\rustdesk.exe` (ej.
+`C:\Program Files\PrimeTec RustDesk\rustdesk.exe`), pero el MSI oficial se
+instalaba sin indicarle carpeta, así que `rustdesk.exe` terminaba en
+`C:\Program Files\RustDesk\rustdesk.exe` (carpeta distinta). Resultado: al
+hacer doble clic, Windows mostraba "Falta el icono de acceso directo".
+
+Ya está corregido pasando `INSTALLFOLDER="{app}"` al `msiexec` para que el
+MSI se instale en la misma carpeta que usan los accesos directos, y
+desactivando los accesos directos propios del MSI (`CREATESTARTMENUSHORTCUTS`
+/ `CREATEDESKTOPSHORTCUTS` en "N") para no duplicarlos.
+
+**Para los equipos que ya instalaron la versión con el bug**, hay dos
+opciones (no hace falta reinstalar todo si no quieres):
+- Rápida: edita el acceso directo roto (clic derecho > Propiedades) y cambia
+  el "Destino" a `C:\Program Files\RustDesk\rustdesk.exe`.
+- Recomendada: vuelve a compilar el instalador con el `.iss` corregido y
+  reinstala (el MSI detecta la instalación previa y la reubica/actualiza).
+
 ## Estado actual
 
 Ya se compiló y validó una vez (en Linux, vía Docker + Wine con la imagen
