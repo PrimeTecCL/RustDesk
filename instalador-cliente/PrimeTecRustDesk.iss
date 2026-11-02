@@ -97,13 +97,24 @@ Name: "{autodesktop}\{#RD_APP_NAME}"; Filename: "{app}\rustdesk.exe"; IconFilena
 
 [Run]
 ; 1) Instala el MSI oficial de RustDesk en modo silencioso.
-;    IMPORTANTE: se fuerza INSTALLFOLDER="{app}" para que rustdesk.exe quede
-;    en la misma carpeta que usan los accesos directos de abajo (si no, el
-;    MSI se instala por defecto en "C:\Program Files\RustDesk" y los accesos
-;    directos quedan rotos: "Falta el icono de acceso directo"). Tambien se
-;    desactivan los accesos directos propios del MSI para no duplicar los
-;    nuestros (con marca/icono de la empresa).
-Filename: "msiexec.exe"; Parameters: "/i ""{tmp}\{#RD_MSI_NAME}"" /qn /norestart INSTALLFOLDER=""{app}"" CREATESTARTMENUSHORTCUTS=""N"" CREATEDESKTOPSHORTCUTS=""N"""; StatusMsg: "Instalando RustDesk..."; Flags: waituntilterminated
+;    IMPORTANTE: el Directory ID real del MSI donde queda rustdesk.exe es
+;    "INSTALLFOLDER_INNER" (verificado inspeccionando las tablas
+;    Property/Directory/CustomAction del MSI con el COM object
+;    WindowsInstaller.Installer). "INSTALLFOLDER" (usado en el fix
+;    anterior) no es un Directory ID, es solo una propiedad que una Custom
+;    Action interna del MSI (SetInstallFolderInnerAppendSlashProduct) usa
+;    para calcular INSTALLFOLDER_INNER agregandole "\RustDesk\" al final;
+;    por eso el fix anterior dejaba rustdesk.exe en "{app}\RustDesk\"
+;    (una subcarpeta extra) en vez de "{app}\" directo, donde apunta el
+;    acceso directo => "Falta el icono de acceso directo". Al setear
+;    INSTALLFOLDER_INNER directamente (sin tocar INSTALLFOLDER) se
+;    bypasea esa Custom Action (solo se activa si INSTALLFOLDER viene
+;    seteado). Validado con una instalacion real completa en Windows.
+;    Las propiedades reales que condicionan los shortcuts propios del MSI
+;    son "DESKTOPSHORTCUTS" y "STARTMENUSHORTCUTS" (verificado en la tabla
+;    Component/Condition; "CREATEDESKTOPSHORTCUTS"/"CREATESTARTMENUSHORTCUTS"
+;    no condicionan nada real, tambien eran incorrectas).
+Filename: "msiexec.exe"; Parameters: "/i ""{tmp}\{#RD_MSI_NAME}"" /qn /norestart INSTALLFOLDER_INNER=""{app}"" DESKTOPSHORTCUTS=""0"" STARTMENUSHORTCUTS=""0"""; StatusMsg: "Instalando RustDesk..."; Flags: waituntilterminated
 
 [UninstallRun]
 ; Al desinstalar "PrimeTec RustDesk" (desde Configuracion/Panel de Control),
